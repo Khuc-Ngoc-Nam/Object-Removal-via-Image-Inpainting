@@ -78,8 +78,9 @@ async def websocket_endpoint(websocket: WebSocket, session_id: str):
                 
             elif action == "close":
                 # User closed the loop, generate binary mask
-                points = data.get("points", [])
-                if len(points) > 2:
+                raw_points = data.get("points", [])
+                if len(raw_points) > 2:
+                    points = [[p["x"], p["y"]] for p in raw_points]
                     mask = core.generate_mask(points)
                     # For demo purposes, we will return the mask as a base64 encoded image
                     _, buffer = cv2.imencode('.png', mask)

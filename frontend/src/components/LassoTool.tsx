@@ -305,10 +305,8 @@ export default function LassoTool() {
     }
   };
 
-  const resetAll = () => {
+  const resetDrawing = () => {
     setMaskUrl(null); 
-    setSessionId(null); 
-    setFile(null); 
     setAllPoints([]);
     setFrozenContours([]);
     setDynamicContour([]);
@@ -319,9 +317,15 @@ export default function LassoTool() {
     setIsDrawing(false);
   };
 
+  const resetAll = () => {
+    setSessionId(null); 
+    setFile(null); 
+    resetDrawing();
+  };
+
   return (
     <div className="flex flex-col items-center p-6 bg-gray-50 min-h-screen text-gray-800">
-      <h1 className="text-3xl font-bold mb-4 text-blue-600">Intelligent Scissors Web Demo</h1>
+      <h1 className="text-3xl font-bold mb-4 text-blue-600">Lasso Tool</h1>
       
       {!sessionId && (
         <div className="mb-8 p-6 bg-white rounded-lg shadow-md border border-gray-200">
@@ -349,8 +353,11 @@ export default function LassoTool() {
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}
             onContextMenu={(e) => e.preventDefault()}
-            className={isDrawing ? "cursor-crosshair" : "cursor-default"}
-            style={{ maxWidth: "100%", maxHeight: "80vh", objectFit: "contain", display: "block" }}
+            className="cursor-crosshair"
+            style={{ 
+              cursor: 'url("data:image/svg+xml,%3Csvg xmlns=\\\'http://www.w3.org/2000/svg\\\' width=\\\'24\\\' height=\\\'24\\\' viewBox=\\\'0 0 24 24\\\' fill=\\\'none\\\' stroke=\\\'%231d4ed8\\\' stroke-width=\\\'2\\\' stroke-linecap=\\\'round\\\' stroke-linejoin=\\\'round\\\'%3E%3Cpath d=\\\'M7 21S4 18 4 14c0-4 3-7 5-7s6 2 8 5c1.45 2.18 3 3 3 3\\\'/%3E%3Ccircle cx=\\\'10\\\' cy=\\\'5\\\' r=\\\'2\\\'/%3E%3C/svg%3E") 10 5, crosshair',
+              maxWidth: "100%", maxHeight: "80vh", objectFit: "contain", display: "block" 
+            }}
           ></canvas>
         </div>
       )}
@@ -363,13 +370,31 @@ export default function LassoTool() {
 
       {maskUrl && (
         <div className="mt-8 flex flex-col items-center">
-          <h2 className="text-xl font-bold mb-4 text-green-600">Đã lưu Binary Mask thành công!</h2>
-          <p className="text-gray-500 mb-4">Mặt nạ nhị phân (Binary Mask) đã được tạo ngầm và sẵn sàng làm input cho Module 2 (Inpainting).</p>
+          <h2 className="text-xl font-bold mb-4 text-green-600">Đã khép kín vòng!</h2>
+          <p className="text-gray-500 mb-6 text-center max-w-lg">
+            Đường bao vật thể đã được xác định. Bạn có thể xoá vật thể này hoặc vẽ lại nếu chưa ưng ý.
+          </p>
+          
+          <div className="flex flex-row gap-4">
+            <button 
+              onClick={() => alert('Backend Module 2 (Inpainting) sẽ được gọi để xoá vật thể này. Tính năng đang được phát triển!')}
+              className="px-6 py-3 bg-red-600 text-white font-bold rounded shadow hover:bg-red-700 transition"
+            >
+              Xoá vật thể này
+            </button>
+            <button 
+              onClick={resetDrawing}
+              className="px-6 py-3 bg-gray-200 text-gray-800 font-semibold rounded shadow hover:bg-gray-300 transition"
+            >
+              Xoá đường bao và vẽ lại
+            </button>
+          </div>
+
           <button 
             onClick={resetAll}
-            className="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            className="mt-6 text-sm text-blue-600 underline hover:text-blue-800 transition"
           >
-            Start Over
+            Tải ảnh khác
           </button>
         </div>
       )}
