@@ -43,6 +43,7 @@ MANIFEST
 venv/
 .env
 .venv
+inpainting/
 env/
 ENV/
 env.bak/
@@ -71,6 +72,7 @@ build/
 *.swo
 *~
 .gemini/
+*.log
 
 # =========================
 # Project Specific Data
