@@ -663,7 +663,7 @@ with gr.Blocks(title="Object Removal via LaMa") as demo:
 if __name__ == "__main__":
     demo.queue(default_concurrency_limit=1).launch(
         server_name="127.0.0.1",
-        server_port=7860,
+        server_port=8000,
         show_error=True,
         theme=gr.themes.Soft(),
         css=CSS,
