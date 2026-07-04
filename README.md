@@ -1,34 +1,31 @@
 # How to run
 
-This repository contains the local web app for object removal via interactive segmentation and LaMa-Fourier inpainting.
+This project is a local web app for object removal via interactive segmentation and LaMa-Fourier inpainting.
 
-The app has two processes:
+It has two processes:
 
 - Backend: FastAPI at `http://127.0.0.1:8000`
 - Frontend: Next.js at `http://127.0.0.1:3000`
 
-## 0. Prerequisites
+## 1. Run from the submitted ZIP file
 
-Use Git clone, not GitHub `Download ZIP`. GitHub ZIP files do not include Git LFS weights correctly.
+If you receive this project as a `.zip` file from Microsoft Teams:
 
-Install:
+1. Extract the ZIP file.
+2. Open PowerShell.
+3. Go to the extracted project folder.
 
-- Python 3.10 or newer
-- Node.js 20 or newer
-- Git LFS
-
-Clone and pull LFS files:
+Example:
 
 ```powershell
-git clone https://github.com/Khuc-Ngoc-Nam/Object-Removal-via-Image-Inpainting.git
-cd Object-Removal-via-Image-Inpainting
-git lfs install
-git lfs pull
+cd "D:\Object-Removal-via-Image-Inpainting"
 ```
 
-## 1. Required folder structure
+Do not run commands inside the ZIP preview window. Extract the ZIP first.
 
-Before running the app, make sure the model weights exist in these exact paths:
+## 2. Required folder structure
+
+The extracted folder must contain these files:
 
 ```text
 Object-Removal-via-Image-Inpainting/
@@ -42,33 +39,45 @@ Object-Removal-via-Image-Inpainting/
 |   `-- checkpoint_3.pt
 |-- results/
 |   `-- checkpoints/
-|       `-- best_lama_generator_only.pth
+|       |-- best_lama_generator_only.pth
+|       `-- lama_full_checkpoint_latest.pth
 `-- frontend/
     |-- package.json
+    |-- package-lock.json
     `-- src/
         |-- app/
         `-- components/
 ```
 
-Required weights:
+Required weights for running the web app:
 
 ```text
 module1/checkpoint_3.pt
 results/checkpoints/best_lama_generator_only.pth
 ```
 
-Check weight sizes on Windows PowerShell:
+`results/checkpoints/lama_full_checkpoint_latest.pth` is included for completeness, but the web app uses `best_lama_generator_only.pth` for inference.
+
+Check the weight files:
 
 ```powershell
-Get-Item .\module1\checkpoint_3.pt, .\results\checkpoints\best_lama_generator_only.pth |
+Get-Item .\module1\checkpoint_3.pt, .\results\checkpoints\best_lama_generator_only.pth, .\results\checkpoints\lama_full_checkpoint_latest.pth |
   Select-Object Name, @{Name="MB";Expression={[math]::Round($_.Length/1MB,2)}}
 ```
 
-Expected sizes are about `470 MB` for `checkpoint_3.pt` and `161 MB` for `best_lama_generator_only.pth`. If the files are only a few KB, run `git lfs pull` again.
+Expected sizes:
 
-## 2. Install backend
+```text
+checkpoint_3.pt                    about 470 MB
+best_lama_generator_only.pth        about 161 MB
+lama_full_checkpoint_latest.pth     about 514 MB
+```
 
-Run from the repository root:
+If a weight file is only a few KB, it is not the real model file.
+
+## 3. Install backend
+
+Run from the project root:
 
 ```powershell
 python -m venv inpainting
@@ -76,31 +85,45 @@ python -m venv inpainting
 .\inpainting\Scripts\python.exe -m pip install -r requirements.txt
 ```
 
-## 3. Run backend
+This step needs internet access because `requirements.txt` installs the SAM2 package from GitHub.
 
-Run from the repository root:
+## 4. Run backend
+
+Run from the project root:
 
 ```powershell
 .\inpainting\Scripts\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
 ```
 
-Check backend:
+Keep this terminal open.
+
+Check backend in a browser:
 
 ```text
 http://127.0.0.1:8000/health
-http://127.0.0.1:8000/docs
 ```
 
-## 4. Install frontend
+The response should include:
 
-Open a second terminal:
+```text
+"status":"ok"
+"lama_checkpoint_exists":true
+"sam2_checkpoint_exists":true
+"sam2_package_available":true
+```
+
+## 5. Install frontend
+
+Open a second PowerShell terminal:
 
 ```powershell
-cd frontend
+cd "D:\Object-Removal-via-Image-Inpainting\frontend"
 npm install
 ```
 
-## 5. Run frontend
+Replace the path with your extracted project path.
+
+## 6. Run frontend
 
 Run from the `frontend` folder:
 
@@ -115,24 +138,6 @@ Open:
 http://127.0.0.1:3000
 ```
 
-## 6. Quick checks
-
-Backend health must return `"status":"ok"`:
-
-```powershell
-Invoke-WebRequest http://127.0.0.1:8000/health -UseBasicParsing
-```
-
-The response should include:
-
-```text
-"lama_checkpoint_exists":true
-"sam2_checkpoint_exists":true
-"sam2_package_available":true
-```
-
-If port `3000` or `8000` is already used, stop the old process or choose another port.
-
 ## 7. Use the web app
 
 1. Upload an image.
@@ -143,3 +148,30 @@ If port `3000` or `8000` is already used, stop the old process or choose another
 6. Click an output image to view it full size or download it.
 
 Note: the upload UI shows `Require min(height/width) = 256 or 512`.
+
+## Troubleshooting
+
+If the frontend shows `Failed to fetch`, the backend is usually not running. Start the backend at `http://127.0.0.1:8000` and reload the frontend.
+
+If port `8000` or `3000` is already used, stop the old process or choose another port.
+
+If SAM2 is slow on the first click, wait a few seconds. The backend loads the SAM2 checkpoint on the first request.
+
+If `/health` shows `"sam2_package_available":false`, reinstall backend dependencies:
+
+```powershell
+.\inpainting\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+## If using GitHub instead of the submitted ZIP
+
+GitHub uses Git LFS for the weight files. Do not use GitHub `Download ZIP`, because it may not include the real LFS weight files.
+
+Use:
+
+```powershell
+git clone https://github.com/Khuc-Ngoc-Nam/Object-Removal-via-Image-Inpainting.git
+cd Object-Removal-via-Image-Inpainting
+git lfs install
+git lfs pull
+```
