@@ -7,9 +7,28 @@ The app has two processes:
 - Backend: FastAPI at `http://127.0.0.1:8000`
 - Frontend: Next.js at `http://127.0.0.1:3000`
 
+## 0. Prerequisites
+
+Use Git clone, not GitHub `Download ZIP`. GitHub ZIP files do not include Git LFS weights correctly.
+
+Install:
+
+- Python 3.10 or newer
+- Node.js 20 or newer
+- Git LFS
+
+Clone and pull LFS files:
+
+```powershell
+git clone https://github.com/Khuc-Ngoc-Nam/Object-Removal-via-Image-Inpainting.git
+cd Object-Removal-via-Image-Inpainting
+git lfs install
+git lfs pull
+```
+
 ## 1. Required folder structure
 
-Before running the app, place the model weights in these exact paths:
+Before running the app, make sure the model weights exist in these exact paths:
 
 ```text
 Object-Removal-via-Image-Inpainting/
@@ -38,12 +57,14 @@ module1/checkpoint_3.pt
 results/checkpoints/best_lama_generator_only.pth
 ```
 
-The weights are stored with Git LFS. After cloning the repository, install Git LFS and pull the weight files:
+Check weight sizes on Windows PowerShell:
 
 ```powershell
-git lfs install
-git lfs pull
+Get-Item .\module1\checkpoint_3.pt, .\results\checkpoints\best_lama_generator_only.pth |
+  Select-Object Name, @{Name="MB";Expression={[math]::Round($_.Length/1MB,2)}}
 ```
+
+Expected sizes are about `470 MB` for `checkpoint_3.pt` and `161 MB` for `best_lama_generator_only.pth`. If the files are only a few KB, run `git lfs pull` again.
 
 ## 2. Install backend
 
@@ -94,7 +115,25 @@ Open:
 http://127.0.0.1:3000
 ```
 
-## 6. Use the web app
+## 6. Quick checks
+
+Backend health must return `"status":"ok"`:
+
+```powershell
+Invoke-WebRequest http://127.0.0.1:8000/health -UseBasicParsing
+```
+
+The response should include:
+
+```text
+"lama_checkpoint_exists":true
+"sam2_checkpoint_exists":true
+"sam2_package_available":true
+```
+
+If port `3000` or `8000` is already used, stop the old process or choose another port.
+
+## 7. Use the web app
 
 1. Upload an image.
 2. Choose one segmentation mode: `Brush mask`, `IntelligentScissors`, `Grabcut`, or `SAM2`.
