@@ -73,6 +73,8 @@ build/
 *~
 .gemini/
 *.log
+*.err
+*.out
 
 # =========================
 # Project Specific Data
@@ -82,6 +84,16 @@ build/
 *.jpeg
 *.png
 *.pdf
+*.mp4
+*.ipynb
+*.pt
+*.pth
 mask.png
 photo.jpg
 image.png
+gldv2_micro/
+external/
+results/output/
+results/benchmark*/
+ngrok*
+proxy.local.*

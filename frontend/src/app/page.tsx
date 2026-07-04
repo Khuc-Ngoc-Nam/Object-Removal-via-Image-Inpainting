@@ -1,9 +1,9 @@
-import LassoTool from "@/components/LassoTool";
+import ObjectRemovalStudio from "@/components/ObjectRemovalStudio";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gray-100">
-      <LassoTool />
+    <main>
+      <ObjectRemovalStudio />
     </main>
   );
 }
